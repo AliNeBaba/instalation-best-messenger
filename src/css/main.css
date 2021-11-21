@@ -43,6 +43,9 @@ body {
 button {
   border: none;
 }
+button > * {
+  pointer-events: none;
+}
 
 /*   --- Некоторые основные стили ---   */
 .color-black {
@@ -122,6 +125,14 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.sign-block {
+  margin-bottom: 0;
+  margin-top: auto;
+  align-self: flex-end;
+  position: fixed;
+  bottom: 5rem;
+  right: 0;
 }
 
 /*   --- Стили для футера ---   */

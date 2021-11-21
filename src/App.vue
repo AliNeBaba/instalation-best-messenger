@@ -13,7 +13,7 @@
           >
           <template v-if="lang == 'ru'">Ответ</template>
           <template v-else>Answer</template>
-          <arrow-next />
+          <img src="~@/assets/img/ArrowNext.svg" />
         </button>
       </div>
     </div>
@@ -22,18 +22,21 @@
         <div class="blank color-black"></div>
         <p class="answer-question">{{ getAnswer[0] }}</p>
         <div class="line color-blue"></div>
-        <p class="general-answer">{{ getAnswer[1] }}</p>
-        <p class="answer-info">{{ getAnswer[2] }}</p>
-        <button class="sign btn color-blue" type="button">
-          <sign-lang />
+        <p class="general-answer">{{ getAnswer[1] }} </p>
+        <p class="answer-info">{{ getAnswer[2] }} </p>
+        <button
+          @click="setSignLang()"
+          class="sign btn color-blue" type="button">
+          <img src="~@/assets/img/SignLang.svg" />
         </button>
         <button
           @click="showAnswer = false"
           class="close btn color-blue" type="button">
-          <cross-close />
+          <img src="~@/assets/img/Close.svg" />
         </button>
       </div>
     </div>
+    <img v-if="showSignLang" class="sign-block" src="~@/assets/img/sign-lang.png" />
   </div>
 
 <!--   Футер   -->
@@ -45,13 +48,17 @@
         @click="currentPage--"
         :disabled="currentPage == 0"
         >
-        <arrow-back />
+        <img src="~@/assets/img/ArrowBack.svg" />
       </button>
       <div
         v-show="showAnswer == false"
         class="paging color-white"
         >
-        <div v-for="n in 3" :key="n" class="page"></div>
+        <div v-for="n in getTotalPages" :key="n"
+          class="page"
+          :class="{ 'color-blue': this.currentPage + 1 == n }"
+          >
+        </div>
       </div>
       <button
         v-show="showAnswer == false"
@@ -60,14 +67,15 @@
         @click="currentPage++"
         :disabled="currentPage == Math.ceil(articles[lang].length / itemsPerPage) - 1"
         >
-        <arrow-next />
+        <img src="~@/assets/img/ArrowNext.svg" />
       </button>
     <button
       v-show="showAnswer == false"
+      @click="setSignLang()"
       class="btn color-blue"
       type="button"
       >
-      <sign-lang />
+      <img src="~@/assets/img/SignLang.svg" />
     </button>
     <button
       class="btn color-white"
@@ -81,18 +89,10 @@
 </template>
 
 <script>
-import ArrowBack from './components/SvgArrowBack.vue'
-import ArrowNext from './components/SvgArrowNext.vue'
-import SignLang from './components/SvgSignLang.vue'
-import CrossClose from './components/SvgCrossClose.vue'
 
 export default {
   name: 'App',
   components: {
-    'arrow-back': ArrowBack,
-    'arrow-next': ArrowNext,
-    'sign-lang': SignLang,
-    'cross-close': CrossClose
   },
   data () {
     return {
@@ -104,6 +104,7 @@ export default {
       itemsPerPage: 4,
       lang: 'ru',
       showAnswer: false,
+      showSignLang: false,
       currentIndex: null
     }
   },
@@ -122,6 +123,9 @@ export default {
       const end = start + this.itemsPerPage
       return this.articles[this.lang].slice(start, end)
     },
+    getTotalPages () {
+      return Math.ceil(this.articles.ru.length / this.itemsPerPage)
+    },
     getAnswer () {
       return this.articles[this.lang][this.currentIndex]
     }
@@ -130,6 +134,11 @@ export default {
     setAnswer (target) {
       this.currentIndex = this.articles[this.lang].findIndex(arr => arr[0] === target)
       this.showAnswer = true
+    },
+    setSignLang () {
+      this.itemsPerPage = this.itemsPerPage === 4 ? 2 : 4
+      this.showSignLang = !this.showSignLang
+      this.currentPage = this.showSignLang ? this.currentPage * 2 : Math.ceil((this.currentPage - 1) / 2)
     }
   }
 }
