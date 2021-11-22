@@ -1,6 +1,6 @@
 <template>
 
-  <div class="container color-black">
+  <div class="main">
 
     <block-question v-show="showAnswer === false"
       v-for="item in currentQuestions" :key="item"
@@ -18,7 +18,7 @@
 
   </div>
 
-  <div class="footer color-black">
+  <div class="footer">
 
     <content-switcher v-show="showAnswer === false"
       @change-content="paginationState.currentPage--"
@@ -44,14 +44,16 @@
     </content-switcher>
 
     <button
-      class="btn color-white"
+      class="lang-btn"
       type="button"
       @click="lang === 'ru' ? lang = 'en' : lang = 'ru'"
       >
       <template v-if="lang === 'ru'">Eng</template>
       <template v-else>Ru</template>
     </button>
+
   </div>
+
 </template>
 
 <script>
@@ -135,3 +137,79 @@ export default {
   }
 }
 </script>
+
+<style>
+@font-face {
+    font-family: 'Halvar Breit Rg';
+    src: url('~@/assets/fonts/HalvarBreit-Rg.eot');
+    src: local('Halvar Breitschrift Regular'), local('HalvarBreit-Rg'),
+        url('~@/assets/fonts/HalvarBreit-Rg.eot?#iefix') format('embedded-opentype'),
+        url('~@/assets/fonts/HalvarBreit-Rg.woff2') format('woff2'),
+        url('~@/assets/fonts/HalvarBreit-Rg.woff') format('woff'),
+        url('~@/assets/fonts/HalvarBreit-Rg.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Atlas Grotesk';
+    src: url('~@/assets/fonts/Atlas Grotesk-Regular-Desktop.otf');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+  --font-halvar: 'Halvar Breit Rg', serif;
+  --font-atlas: 'Atlas Grotesk', serif;
+  --halvar-medium: 2rem;
+  --halvar-big: 3rem;
+  --atlas-large: 1.85rem;
+  --atlas-medium: 1.3rem;
+  --bg-black: #2a2a2a;
+  --bg-blue: #124adf;
+  --bg-white: #fff;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+}
+body {
+  margin: 0;
+}
+#app {
+  height: 100vh;
+}
+button {
+  border: none;
+  font-family: var(--font-halvar);
+  font-size: var(--halvar-medium);
+}
+button > * {
+  pointer-events: none;
+}
+p {
+  font-family: var(--font-atlas);
+  font-size: var(--atlas-large);
+}
+
+.main {
+  background-color: var(--bg-black);
+  height: 93.75%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.footer {
+  background-color: var(--bg-black);
+  height: 6.25%;
+  display: flex;
+  justify-content: flex-end;
+}
+.lang-btn {
+  background-color: var(--bg-white);
+  width: 13.5%;
+}
+</style>

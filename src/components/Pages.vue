@@ -1,7 +1,7 @@
 <template>
   <div class="paging color-white">
     <div v-for="n in getPages" :key="n" class="page"
-      :class="{ 'color-blue': this.page + 1 === n }">
+      :class="{ 'bg-blue': this.page + 1 === n }">
     </div>
   </div>
 </template>
@@ -17,3 +17,23 @@ export default {
   }
 }
 </script>
+
+<style>
+.paging {
+  background-color: var(--bg-white);
+  width: 46%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.page {
+  height: 25px;
+  width: 25px;
+  border: 6px solid var(--bg-blue);
+  border-radius: 50%;
+  margin: auto 6px;
+}
+.bg-blue {
+  background-color: var(--bg-blue);
+}
+</style>
