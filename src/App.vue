@@ -3,7 +3,7 @@
 <!--   Основное содержание (вопросы и ответы)   -->
   <div class="container color-black">
     <div v-for="item in currentQuestions" :key="item">
-      <div v-show="showAnswer == false"
+      <div v-show="showAnswer === false"
       class="block-question color-white">
         <div class="blank color-black"></div>
         <p>{{ item[0] }}</p>
@@ -11,13 +11,13 @@
           @click="setAnswer(item[0])"
           class="btn-answer color-blue"
           >
-          <template v-if="lang == 'ru'">Ответ</template>
+          <template v-if="lang === 'ru'">Ответ</template>
           <template v-else>Answer</template>
           <img src="~@/assets/img/ArrowNext.svg" />
         </button>
       </div>
     </div>
-    <div v-if="showAnswer == true">
+    <div v-if="showAnswer === true">
       <div class="block-answer color-white">
         <div class="blank color-black"></div>
         <p class="answer-question">{{ getAnswer[0] }}</p>
@@ -42,35 +42,35 @@
 <!--   Футер   -->
   <div class="footer color-black">
       <button
-        v-show="showAnswer == false"
+        v-show="showAnswer === false"
         class="btn color-blue"
         type="button"
-        @click="currentPage--"
-        :disabled="currentPage == 0"
+        @click="paginationState.currentPage--"
+        :disabled="paginationState.currentPage === 0"
         >
         <img src="~@/assets/img/ArrowBack.svg" />
       </button>
       <div
-        v-show="showAnswer == false"
+        v-show="showAnswer === false"
         class="paging color-white"
         >
         <div v-for="n in getTotalPages" :key="n"
           class="page"
-          :class="{ 'color-blue': this.currentPage + 1 == n }"
+          :class="{ 'color-blue': this.paginationState.currentPage + 1 === n }"
           >
         </div>
       </div>
       <button
-        v-show="showAnswer == false"
+        v-show="showAnswer === false"
         class="btn color-blue"
         type="button"
-        @click="currentPage++"
-        :disabled="currentPage == Math.ceil(articles[lang].length / itemsPerPage) - 1"
+        @click="paginationState.currentPage++"
+        :disabled="paginationState.currentPage === Math.ceil(articles[lang].length / paginationState.itemsPerPage) - 1"
         >
         <img src="~@/assets/img/ArrowNext.svg" />
       </button>
     <button
-      v-show="showAnswer == false"
+      v-show="showAnswer === false"
       @click="setSignLang()"
       class="btn color-blue"
       type="button"
@@ -80,9 +80,9 @@
     <button
       class="btn color-white"
       type="button"
-      @click="lang == 'ru' ? lang = 'en' : lang = 'ru'"
+      @click="lang === 'ru' ? lang = 'en' : lang = 'ru'"
       >
-      <template v-if="lang == 'ru'">Eng</template>
+      <template v-if="lang === 'ru'">Eng</template>
       <template v-else>Ru</template>
     </button>
   </div>
@@ -100,12 +100,15 @@ export default {
         ru: [],
         eng: []
       },
-      currentPage: 0,
-      itemsPerPage: 4,
+      paginationState: {
+        currentPage: 0,
+        itemsPerPage: 4
+      },
       lang: 'ru',
       showAnswer: false,
       showSignLang: false,
-      currentIndex: null
+      currentIndex: null,
+      idleTimer: null
     }
   },
   created: function () {
@@ -117,14 +120,17 @@ export default {
         }
       })
   },
+  mounted: function () {
+    document.addEventListener('mousedown', this.loadIdleTimer)
+  },
   computed: {
     currentQuestions () {
-      const start = this.currentPage * this.itemsPerPage
-      const end = start + this.itemsPerPage
+      const start = this.paginationState.currentPage * this.paginationState.itemsPerPage
+      const end = start + this.paginationState.itemsPerPage
       return this.articles[this.lang].slice(start, end)
     },
     getTotalPages () {
-      return Math.ceil(this.articles.ru.length / this.itemsPerPage)
+      return Math.ceil(this.articles.ru.length / this.paginationState.itemsPerPage)
     },
     getAnswer () {
       return this.articles[this.lang][this.currentIndex]
@@ -136,9 +142,22 @@ export default {
       this.showAnswer = true
     },
     setSignLang () {
-      this.itemsPerPage = this.itemsPerPage === 4 ? 2 : 4
+      this.paginationState.itemsPerPage = this.paginationState.itemsPerPage === 4 ? 2 : 4
       this.showSignLang = !this.showSignLang
-      this.currentPage = this.showSignLang ? this.currentPage * 2 : Math.ceil((this.currentPage - 1) / 2)
+      this.paginationState.currentPage = this.showSignLang
+        ? this.paginationState.currentPage * 2
+        : Math.ceil((this.paginationState.currentPage - 1) / 2)
+    },
+    loadIdleTimer () {
+      clearTimeout(this.idleTimer)
+      this.idleTimer = setTimeout(this.resetPage, 15000)
+    },
+    resetPage () {
+      this.paginationState.currentPage = 0
+      this.showAnswer = false
+      this.showSignLang = false
+      this.paginationState.itemsPerPage = 4
+      this.lang = 'ru'
     }
   }
 }
