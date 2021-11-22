@@ -5,27 +5,22 @@
     <div class="line color-blue"></div>
     <p class="general-answer">{{ content[1] }}</p>
     <p class="answer-info">{{ content[2] }}</p>
-    <button class="sign btn color-blue" type="button">
-      <sign-lang />
+    <button class="sign btn color-blue" type="button"
+      @click="$emit('setSignLang')"
+      >
+      <img src="~@/assets/img/SignLang.svg" />
     </button>
-    <button
+    <button class="close btn color-blue" type="button"
       @click="$emit('closeAnswer')"
-      class="close btn color-blue" type="button">
-      <cross-close />
+      >
+      <img src="~@/assets/img/Close.svg" />
     </button>
   </div>
 </template>
 
 <script>
-import CrossClose from './SvgCrossClose.vue'
-import SignLang from './SvgSignLang.vue'
-
 export default {
-  name: 'BlockAnswer',
-  components: {
-    'cross-close': CrossClose,
-    'sign-lang': SignLang
-  },
+  name: 'Answer',
   props: ['content']
 }
 </script>

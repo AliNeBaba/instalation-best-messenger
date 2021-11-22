@@ -1,82 +1,48 @@
 <template>
 
-<!--   Основное содержание (вопросы и ответы)   -->
   <div class="container color-black">
-    <div v-for="item in currentQuestions" :key="item">
-      <div v-show="showAnswer === false"
-      class="block-question color-white">
-        <div class="blank color-black"></div>
-        <p>{{ item[0] }}</p>
-        <button
-          @click="setAnswer(item[0])"
-          class="btn-answer color-blue"
-          >
-          <template v-if="lang === 'ru'">Ответ</template>
-          <template v-else>Answer</template>
-          <img src="~@/assets/img/ArrowNext.svg" />
-        </button>
-      </div>
-    </div>
-    <div v-if="showAnswer === true">
-      <div class="block-answer color-white">
-        <div class="blank color-black"></div>
-        <p class="answer-question">{{ getAnswer[0] }}</p>
-        <div class="line color-blue"></div>
-        <p class="general-answer">{{ getAnswer[1] }} </p>
-        <p class="answer-info">{{ getAnswer[2] }} </p>
-        <button
-          @click="setSignLang()"
-          class="sign btn color-blue" type="button">
-          <img src="~@/assets/img/SignLang.svg" />
-        </button>
-        <button
-          @click="showAnswer = false"
-          class="close btn color-blue" type="button">
-          <img src="~@/assets/img/Close.svg" />
-        </button>
-      </div>
-    </div>
-    <img v-if="showSignLang" class="sign-block" src="~@/assets/img/sign-lang.png" />
+
+    <block-question v-show="showAnswer === false"
+      v-for="item in currentQuestions" :key="item"
+      @set-answer="setAnswer(item[0])"
+      :content="item[0]"
+      :lang="lang"
+      />
+    <block-answer v-if="showAnswer === true"
+        :content="getAnswer"
+        @set-sign-lang="setSignLang()"
+        @close-answer="showAnswer = false"
+        />
+
+    <sign-lang v-if="showSignLang" />
+
   </div>
 
-<!--   Футер   -->
   <div class="footer color-black">
-      <button
-        v-show="showAnswer === false"
-        class="btn color-blue"
-        type="button"
-        @click="paginationState.currentPage--"
-        :disabled="paginationState.currentPage === 0"
-        >
-        <img src="~@/assets/img/ArrowBack.svg" />
-      </button>
-      <div
-        v-show="showAnswer === false"
-        class="paging color-white"
-        >
-        <div v-for="n in getTotalPages" :key="n"
-          class="page"
-          :class="{ 'color-blue': this.paginationState.currentPage + 1 === n }"
-          >
-        </div>
-      </div>
-      <button
-        v-show="showAnswer === false"
-        class="btn color-blue"
-        type="button"
-        @click="paginationState.currentPage++"
-        :disabled="paginationState.currentPage === Math.ceil(articles[lang].length / paginationState.itemsPerPage) - 1"
-        >
-        <img src="~@/assets/img/ArrowNext.svg" />
-      </button>
-    <button
-      v-show="showAnswer === false"
-      @click="setSignLang()"
-      class="btn color-blue"
-      type="button"
-      >
+
+    <content-switcher v-show="showAnswer === false"
+      @change-content="paginationState.currentPage--"
+      :disabled="paginationState.currentPage === 0">
+      <img src="~@/assets/img/ArrowBack.svg" />
+    </content-switcher>
+
+    <pages-info v-show="showAnswer === false"
+      :length="articles.ru.length"
+      :page="paginationState.currentPage"
+      :items="paginationState.itemsPerPage"
+      />
+
+    <content-switcher v-show="showAnswer === false"
+      @change-content="paginationState.currentPage++"
+      :disabled="paginationState.currentPage === Math.ceil(articles[lang].length / paginationState.itemsPerPage) - 1">
+      <img src="~@/assets/img/ArrowNext.svg" />
+    </content-switcher>
+
+    <content-switcher v-show="showAnswer === false"
+      @change-content="setSignLang()">
       <img src="~@/assets/img/SignLang.svg" />
-    </button>
+    </content-switcher>
+
     <button
       class="btn color-white"
       type="button"
@@ -89,10 +55,20 @@
 </template>
 
 <script>
+import Answer from '@/components/Answer.vue'
+import Question from '@/components/Question.vue'
+import Sign from '@/components/SignLang.vue'
+import ContentSwitcher from '@/components/ContentSwitcher.vue'
+import Pages from '@/components/Pages.vue'
 
 export default {
   name: 'App',
   components: {
+    'block-answer': Answer,
+    'block-question': Question,
+    'sign-lang': Sign,
+    'content-switcher': ContentSwitcher,
+    'pages-info': Pages
   },
   data () {
     return {
@@ -128,9 +104,6 @@ export default {
       const start = this.paginationState.currentPage * this.paginationState.itemsPerPage
       const end = start + this.paginationState.itemsPerPage
       return this.articles[this.lang].slice(start, end)
-    },
-    getTotalPages () {
-      return Math.ceil(this.articles.ru.length / this.paginationState.itemsPerPage)
     },
     getAnswer () {
       return this.articles[this.lang][this.currentIndex]
