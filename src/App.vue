@@ -1,52 +1,51 @@
 <template>
-
   <div class="main">
 
-    <block-question v-show="showAnswer === false"
-      v-for="item in currentQuestions" :key="item"
-      @set-answer="setAnswer(item[0])"
-      :content="item[0]"
+    <block-question v-for="item in currentQuestions" :key="item"
+      @set-answer="setAnswer($event)"
+      @hide-elements="hideElements"
+      :hide="changeQuestions"
+      :content="item"
       :lang="lang"
       />
-    <block-answer v-if="showAnswer === true"
-        :content="getAnswer"
-        @set-sign-lang="setSignLang()"
-        @close-answer="showAnswer = false"
-        />
-
+    <block-answer
+      :content="currentAnswer"
+      @set-sign-lang="setSignLang()"
+      @close-answer="closeAnswer"
+      />
     <sign-lang v-if="showSignLang" />
 
   </div>
 
   <div class="footer">
 
-    <content-switcher v-show="showAnswer === false"
-      @change-content="paginationState.currentPage--"
+    <content-switcher
+      @change-content="changeContent('sub')"
+      :hide="hideToShowAnswer"
       :disabled="paginationState.currentPage === 0">
       <img src="~@/assets/img/ArrowBack.svg" />
     </content-switcher>
-
-    <pages-info v-show="showAnswer === false"
+    <pages-info
+      :hide="hideToShowAnswer"
       :length="articles.ru.length"
       :page="paginationState.currentPage"
       :items="paginationState.itemsPerPage"
       />
-
-    <content-switcher v-show="showAnswer === false"
-      @change-content="paginationState.currentPage++"
+    <content-switcher
+      :hide="hideToShowAnswer"
+      @change-content="changeContent('add')"
       :disabled="paginationState.currentPage === Math.ceil(articles[lang].length / paginationState.itemsPerPage) - 1">
       <img src="~@/assets/img/ArrowNext.svg" />
     </content-switcher>
-
-    <content-switcher v-show="showAnswer === false"
+    <content-switcher
+      :hide="hideToShowAnswer"
       @change-content="setSignLang()">
       <img src="~@/assets/img/SignLang.svg" />
     </content-switcher>
-
     <button
       class="lang-btn"
       type="button"
-      @click="lang === 'ru' ? lang = 'en' : lang = 'ru'"
+      @click="changeLang"
       >
       <template v-if="lang === 'ru'">Eng</template>
       <template v-else>Ru</template>
@@ -82,10 +81,12 @@ export default {
         currentPage: 0,
         itemsPerPage: 4
       },
+      currentAnswer: [],
+      currentQuestions: [],
       lang: 'ru',
-      showAnswer: false,
+      hideToShowAnswer: false,
+      changeQuestions: false,
       showSignLang: false,
-      currentIndex: null,
       idleTimer: null
     }
   },
@@ -96,32 +97,62 @@ export default {
         for (const key in data.forms.messenger.articles) {
           this.articles[key] = Object.values(data.forms.messenger.articles[key])
         }
+        this.setQuestions('')
       })
   },
   mounted: function () {
     document.addEventListener('mousedown', this.loadIdleTimer)
   },
-  computed: {
-    currentQuestions () {
-      const start = this.paginationState.currentPage * this.paginationState.itemsPerPage
-      const end = start + this.paginationState.itemsPerPage
-      return this.articles[this.lang].slice(start, end)
-    },
-    getAnswer () {
-      return this.articles[this.lang][this.currentIndex]
-    }
+  compuded: {
   },
   methods: {
+    changeContent (action) {
+      this.changeQuestions = true
+      new Promise(function (resolve, reject) {
+        setTimeout(() => resolve(action), 1000)
+      }).then(function (action) {
+        this.changeQuestions = false
+        this.setQuestions(action)
+      }.bind(this))
+    },
+    setQuestions (action) {
+      if (action) {
+        action === 'add'
+          ? this.paginationState.currentPage++
+          : this.paginationState.currentPage--
+      }
+      const start = this.paginationState.currentPage * this.paginationState.itemsPerPage
+      const end = start + this.paginationState.itemsPerPage
+      this.currentQuestions = this.articles[this.lang].slice(start, end)
+    },
     setAnswer (target) {
-      this.currentIndex = this.articles[this.lang].findIndex(arr => arr[0] === target)
-      this.showAnswer = true
+      const index = this.articles[this.lang].findIndex(arr => arr[0] === target)
+      this.currentQuestions = []
+      this.currentAnswer = this.articles[this.lang][index]
+    },
+    closeAnswer () {
+      new Promise(function (resolve, reject) {
+        this.currentAnswer = []
+        setTimeout(() => resolve(), 1000)
+      }.bind(this)).then(function () {
+        this.setQuestions('')
+        this.hideToShowAnswer = false
+      }.bind(this))
+    },
+    hideElements () {
+      this.hideToShowAnswer = true
     },
     setSignLang () {
       this.paginationState.itemsPerPage = this.paginationState.itemsPerPage === 4 ? 2 : 4
+      this.setQuestions('')
       this.showSignLang = !this.showSignLang
       this.paginationState.currentPage = this.showSignLang
         ? this.paginationState.currentPage * 2
         : Math.ceil((this.paginationState.currentPage - 1) / 2)
+    },
+    changeLang () {
+      this.lang === 'ru' ? this.lang = 'en' : this.lang = 'ru'
+      this.setQuestions('')
     },
     loadIdleTimer () {
       clearTimeout(this.idleTimer)
@@ -129,10 +160,10 @@ export default {
     },
     resetPage () {
       this.paginationState.currentPage = 0
-      this.showAnswer = false
       this.showSignLang = false
       this.paginationState.itemsPerPage = 4
       this.lang = 'ru'
+      this.closeAnswer()
     }
   }
 }
@@ -178,6 +209,7 @@ export default {
 }
 body {
   margin: 0;
+  background-color: var(--bg-black);
 }
 #app {
   height: 100vh;
@@ -196,14 +228,12 @@ p {
 }
 
 .main {
-  background-color: var(--bg-black);
   height: 93.75%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 .footer {
-  background-color: var(--bg-black);
   height: 6.25%;
   display: flex;
   justify-content: flex-end;

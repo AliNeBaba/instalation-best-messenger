@@ -7,12 +7,23 @@
 </template>
 
 <script>
+import gsap from 'gsap'
+
 export default {
   name: 'Pages',
-  props: ['length', 'page', 'items'],
+  props: ['length', 'page', 'items', 'hide'],
   computed: {
     getPages () {
       return Math.ceil(this.length / this.items)
+    }
+  },
+  watch: {
+    hide (newValue) {
+      if (newValue) {
+        gsap.to('.paging', { duration: 1, opacity: 0 })
+      } else {
+        gsap.to('.paging', { duration: 1, opacity: 1 })
+      }
     }
   }
 }

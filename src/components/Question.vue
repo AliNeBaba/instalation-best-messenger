@@ -1,28 +1,58 @@
 <template>
-  <div class="question">
-    <div class="blank"></div>
-    <p>{{ content }}</p>
-    <button
-      @click="$emit('setAnswer')"
-      class="btn-answer"
-      >
-      <template v-if="lang === 'ru'">Ответ</template>
-      <template v-else>Answer</template>
-      <img src="~@/assets/img/ArrowNext.svg" />
-    </button>
-  </div>
+    <div class="question">
+      <div class="blank"></div>
+      <p>{{ content[0] }}</p>
+      <button
+        @click="closeQuestion(true)"
+        class="btn-answer"
+        >
+        <template v-if="lang === 'ru'">Ответ</template>
+        <template v-else>Answer</template>
+        <img src="~@/assets/img/ArrowNext.svg" />
+      </button>
+    </div>
 </template>
 
 <script>
+import gsap from 'gsap'
+
 export default {
   name: 'Question',
-  props: ['content', 'lang']
+  props: ['content', 'lang', 'hide'],
+  emits: ['setAnswer', 'hideElements'],
+  mounted () {
+    new Promise(function (resolve, reject) {
+      gsap.to('.question', { duration: 3, opacity: 1, onComplete: resolve })
+    }).then(function () {
+      console.log('ok answer')
+    })
+  },
+  watch: {
+    hide (newValue) {
+      if (newValue) this.closeQuestion(false)
+    }
+  },
+  methods: {
+    closeQuestion (action) {
+      if (action) {
+        this.$emit('hideElements')
+      }
+      new Promise(function (resolve, reject) {
+        gsap.to('.question', { duration: 1, opacity: 0, onComplete: resolve })
+      }).then(function () {
+        if (action) {
+          this.$emit('setAnswer', this.content[0])
+        }
+      }.bind(this))
+    }
+  }
 }
 </script>
 
 <style>
 .question {
   position: relative;
+  opacity: 0;
   background-color: var(--bg-white);
   width: 45rem;
   padding: 2.5rem 3.75rem 2.5rem 5rem;

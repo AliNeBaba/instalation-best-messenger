@@ -1,27 +1,40 @@
 <template>
-  <div class="block-answer">
-    <div class="blank"></div>
-    <p class="answer-question">{{ content[0] }}</p>
-    <div class="line"></div>
-    <p class="general-answer">{{ content[1] }}</p>
-    <p class="answer-info">{{ content[2] }}</p>
-    <button class="sign" type="button"
-      @click="$emit('setSignLang')"
-      >
-      <img src="~@/assets/img/SignLang.svg" />
-    </button>
-    <button class="close" type="button"
-      @click="$emit('closeAnswer')"
-      >
-      <img src="~@/assets/img/Close.svg" />
-    </button>
-  </div>
+    <div class="block-answer"
+      v-show="content.length">
+      <div class="blank"></div>
+      <p class="answer-question">{{ content[0] }}</p>
+      <div class="line"></div>
+      <p class="general-answer">{{ content[1] }}</p>
+      <p class="answer-info">{{ content[2] }}</p>
+      <button class="sign" type="button"
+        @click="$emit('setSignLang')"
+        >
+        <img src="~@/assets/img/SignLang.svg" />
+      </button>
+      <button class="close" type="button"
+        @click="this.$emit('closeAnswer')"
+        >
+        <img src="~@/assets/img/Close.svg" />
+      </button>
+    </div>
 </template>
 
 <script>
+import gsap from 'gsap'
+
 export default {
   name: 'Answer',
-  props: ['content']
+  props: ['content'],
+  emits: ['closeAnswer'],
+  watch: {
+    content (newValue) {
+      if (newValue.length) {
+        gsap.to('.block-answer', { duration: 1, opacity: 1 })
+      } else {
+        gsap.to('.block-answer', { duration: 1, opacity: 0 })
+      }
+    }
+  }
 }
 </script>
 
@@ -29,6 +42,7 @@ export default {
 .block-answer {
   background-color: var(--bg-white);
   position: relative;
+  opacity: 0;
   width: 45rem;
   padding: 2.5rem 3.75rem 2.5rem 5rem;
 }
