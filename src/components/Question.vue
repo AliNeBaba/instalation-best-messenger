@@ -21,11 +21,7 @@ export default {
   props: ['content', 'lang', 'hide'],
   emits: ['setAnswer', 'hideElements'],
   mounted () {
-    new Promise(function (resolve, reject) {
-      gsap.to('.question', { duration: 3, opacity: 1, onComplete: resolve })
-    }).then(function () {
-      console.log('ok answer')
-    })
+    gsap.to('.question', { duration: 3, opacity: 1 })
   },
   watch: {
     hide (newValue) {

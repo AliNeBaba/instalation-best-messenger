@@ -91,14 +91,17 @@ export default {
     }
   },
   created: function () {
-    fetch('http://localhost:24567/getData')
-      .then(response => response.json())
-      .then(data => {
-        for (const key in data.forms.messenger.articles) {
-          this.articles[key] = Object.values(data.forms.messenger.articles[key])
-        }
-        this.setQuestions('')
-      })
+    const interval = setInterval(() => {
+      fetch('http://localhost:24567/getData')
+        .then(response => response.json())
+        .then(data => {
+          for (const key in data.forms.messenger.articles) {
+            this.articles[key] = Object.values(data.forms.messenger.articles[key])
+          }
+          this.setQuestions('')
+          clearInterval(interval)
+        }).catch((err) => console.log(err))
+    }, 3000)
   },
   mounted: function () {
     document.addEventListener('mousedown', this.loadIdleTimer)
@@ -108,6 +111,7 @@ export default {
   methods: {
     changeContent (action) {
       this.changeQuestions = true
+      this.buttonsDisable()
       new Promise(function (resolve, reject) {
         setTimeout(() => resolve(action), 1000)
       }).then(function (action) {
@@ -153,6 +157,11 @@ export default {
     changeLang () {
       this.lang === 'ru' ? this.lang = 'en' : this.lang = 'ru'
       this.setQuestions('')
+    },
+    buttonsDisable () {
+      document.querySelectorAll('button').forEach(btn => btn.setAttribute('disabled', 'disabled'))
+      new Promise((resolve) => setTimeout(resolve, 2000))
+        .then(() => document.querySelectorAll('button').forEach(btn => btn.removeAttribute('disabled', 'disabled')))
     },
     loadIdleTimer () {
       clearTimeout(this.idleTimer)
