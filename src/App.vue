@@ -17,41 +17,15 @@
 
   </div>
 
-  <div class="footer">
-
-    <content-switcher
-      @change-content="changeContent('sub')"
-      :hide="hideToShowAnswer"
-      :disabled="paginationState.currentPage === 0">
-      <img src="~@/assets/img/ArrowBack.svg" />
-    </content-switcher>
-    <pages-info
-      :hide="hideToShowAnswer"
-      :length="articles.ru.length"
-      :page="paginationState.currentPage"
-      :items="paginationState.itemsPerPage"
-      />
-    <content-switcher
-      :hide="hideToShowAnswer"
-      @change-content="changeContent('add')"
-      :disabled="paginationState.currentPage === Math.ceil(articles[lang].length / paginationState.itemsPerPage) - 1">
-      <img src="~@/assets/img/ArrowNext.svg" />
-    </content-switcher>
-    <content-switcher
-      :hide="hideToShowAnswer"
-      @change-content="setSignLang()">
-      <img src="~@/assets/img/SignLang.svg" />
-    </content-switcher>
-    <button
-      class="lang-btn"
-      type="button"
-      @click="changeLang"
-      >
-      <template v-if="lang === 'ru'">Eng</template>
-      <template v-else>Ru</template>
-    </button>
-
-  </div>
+  <state-manager
+    @switch-page="switchPage($event)"
+    @set-lang="setLang($event)"
+    :state="state"
+    :total="articles.ru.length"
+    :flag-hide="flags.hideToShowAnswer"
+    :flag-disable="flags.blockInput"
+    :lang="lang"
+    />
 
 </template>
 
@@ -59,8 +33,7 @@
 import Answer from '@/components/Answer.vue'
 import Question from '@/components/Question.vue'
 import Sign from '@/components/SignLang.vue'
-import ContentSwitcher from '@/components/ContentSwitcher.vue'
-import Pages from '@/components/Pages.vue'
+import StateManager from '@/components/StateManager.vue'
 
 export default {
   name: 'App',
@@ -68,8 +41,7 @@ export default {
     'block-answer': Answer,
     'block-question': Question,
     'sign-lang': Sign,
-    'content-switcher': ContentSwitcher,
-    'pages-info': Pages
+    'state-manager': StateManager
   },
   data () {
     return {
@@ -77,14 +49,17 @@ export default {
         ru: [],
         eng: []
       },
-      paginationState: {
-        currentPage: 0,
-        itemsPerPage: 4
+      state: {
+        page: 0,
+        items: 4
+      },
+      flags: {
+        hideToShowAnswer: false,
+        blockInput: false
       },
       currentAnswer: [],
       currentQuestions: [],
       lang: 'ru',
-      hideToShowAnswer: false,
       changeQuestions: false,
       showSignLang: false,
       idleTimer: null
@@ -106,10 +81,10 @@ export default {
   mounted: function () {
     document.addEventListener('mousedown', this.loadIdleTimer)
   },
-  compuded: {
+  computed: {
   },
   methods: {
-    changeContent (action) {
+    switchPage (action) {
       this.changeQuestions = true
       this.buttonsDisable()
       new Promise(function (resolve, reject) {
@@ -122,11 +97,11 @@ export default {
     setQuestions (action) {
       if (action) {
         action === 'add'
-          ? this.paginationState.currentPage++
-          : this.paginationState.currentPage--
+          ? this.state.page++
+          : this.state.page--
       }
-      const start = this.paginationState.currentPage * this.paginationState.itemsPerPage
-      const end = start + this.paginationState.itemsPerPage
+      const start = this.state.page * this.state.items
+      const end = start + this.state.items
       this.currentQuestions = this.articles[this.lang].slice(start, end)
     },
     setAnswer (target) {
@@ -140,19 +115,22 @@ export default {
         setTimeout(() => resolve(), 1000)
       }.bind(this)).then(function () {
         this.setQuestions('')
-        this.hideToShowAnswer = false
+        this.flags.hideToShowAnswer = false
       }.bind(this))
     },
     hideElements () {
-      this.hideToShowAnswer = true
+      this.flags.hideToShowAnswer = true
+    },
+    setLang (target) {
+      target === 'sign' ? this.setSignLang() : this.changeLang()
     },
     setSignLang () {
-      this.paginationState.itemsPerPage = this.paginationState.itemsPerPage === 4 ? 2 : 4
+      this.state.items = this.state.items === 4 ? 2 : 4
       this.setQuestions('')
       this.showSignLang = !this.showSignLang
-      this.paginationState.currentPage = this.showSignLang
-        ? this.paginationState.currentPage * 2
-        : Math.ceil((this.paginationState.currentPage - 1) / 2)
+      this.state.page = this.showSignLang
+        ? this.state.page * 2
+        : Math.ceil((this.state.page - 1) / 2)
     },
     changeLang () {
       this.lang === 'ru' ? this.lang = 'en' : this.lang = 'ru'
@@ -160,17 +138,21 @@ export default {
     },
     buttonsDisable () {
       document.querySelectorAll('button').forEach(btn => btn.setAttribute('disabled', 'disabled'))
+      this.flags.blockInput = true
       new Promise((resolve) => setTimeout(resolve, 2000))
-        .then(() => document.querySelectorAll('button').forEach(btn => btn.removeAttribute('disabled', 'disabled')))
+        .then(() => {
+          document.querySelectorAll('button').forEach(btn => btn.removeAttribute('disabled', 'disabled'))
+          this.flags.blockInput = false
+        })
     },
     loadIdleTimer () {
       clearTimeout(this.idleTimer)
       this.idleTimer = setTimeout(this.resetPage, 15000)
     },
     resetPage () {
-      this.paginationState.currentPage = 0
+      this.state.page = 0
       this.showSignLang = false
-      this.paginationState.itemsPerPage = 4
+      this.state.items = 4
       this.lang = 'ru'
       this.closeAnswer()
     }
@@ -241,14 +223,5 @@ p {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-.footer {
-  height: 6.25%;
-  display: flex;
-  justify-content: flex-end;
-}
-.lang-btn {
-  background-color: var(--bg-white);
-  width: 13.5%;
 }
 </style>
