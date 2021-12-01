@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { getData } from '@/service.js'
 import Answer from '@/components/Answer.vue'
 import Question from '@/components/Question.vue'
 import Sign from '@/components/SignLang.vue'
@@ -66,17 +67,14 @@ export default {
     }
   },
   created: function () {
-    const interval = setInterval(() => {
-      fetch('http://localhost:24567/getData')
-        .then(response => response.json())
-        .then(data => {
-          for (const key in data.forms.messenger.articles) {
-            this.articles[key] = Object.values(data.forms.messenger.articles[key])
-          }
-          this.setQuestions('')
-          clearInterval(interval)
-        }).catch((err) => console.log(err))
-    }, 3000)
+    (async () => {
+      const data = await getData()
+      console.log(data)
+      for (const key in data.forms.messenger.articles) {
+        this.articles[key] = Object.values(data.forms.messenger.articles[key])
+      }
+      this.setQuestions('')
+    })()
   },
   mounted: function () {
     document.addEventListener('mousedown', this.loadIdleTimer)

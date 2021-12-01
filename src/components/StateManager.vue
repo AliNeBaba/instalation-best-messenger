@@ -1,32 +1,38 @@
 <template>
   <div class="footer">
 
-    <button class="btn" type="button"
-      @click="$emit('switchPage', 'sub')"
-      :disabled="isDisabledBack">
-      <img src="~@/assets/img/ArrowBack.svg" />
-    </button>
+    <template v-if="!flagHide">
 
-    <div class="paging">
-      <div v-for="n in numberOfPages" :key="n" class="page"
-        :class="{ 'bg-blue': this.state.page + 1 === n }">
+      <button class="btn" type="button"
+        @click="$emit('switchPage', 'sub')"
+        :disabled="isDisabledBack"
+        >
+        <img src="~@/assets/img/ArrowBack.svg" />
+      </button>
+
+      <div class="paging">
+        <div v-for="n in numberOfPages" :key="n" class="page"
+          :class="{ 'bg-blue': this.state.page + 1 === n }"
+          >
+        </div>
       </div>
-    </div>
 
-    <button class="btn" type="button"
-      @click="$emit('switchPage', 'add')"
-      :disabled="isDisabledNext">
-      <img src="~@/assets/img/ArrowNext.svg" />
-    </button>
+      <button class="btn" type="button"
+        @click="$emit('switchPage', 'add')"
+        :disabled="isDisabledNext"
+        >
+        <img src="~@/assets/img/ArrowNext.svg" />
+      </button>
 
-    <button class="btn" type="button"
-      @click="$emit('setLang', 'sign')">
-      <img src="~@/assets/img/SignLang.svg" />
-    </button>
+      <button class="btn" type="button"
+        @click="$emit('setLang', 'sign')"
+        >
+        <img src="~@/assets/img/SignLang.svg" />
+      </button>
 
-    <button
-      class="lang-btn"
-      type="button"
+    </template>
+
+    <button class="lang-btn" type="button"
       @click="$emit('setLang', 'eng')"
       >
       <template v-if="lang === 'ru'">Eng</template>
@@ -61,8 +67,8 @@ export default {
       }
     }
   },
-  watch: {
-    flagHide (newValue) {
+  methods: {
+    Hide (newValue) {
       if (newValue) {
         gsap.to(['.btn', '.paging'], { duration: 1, opacity: 0 })
       } else {
