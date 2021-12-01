@@ -25,7 +25,7 @@
       </button>
 
       <button class="btn" type="button"
-        @click="$emit('setLang', 'sign')"
+        @click="$emit('setSign')"
         >
         <img src="~@/assets/img/SignLang.svg" />
       </button>
@@ -33,7 +33,7 @@
     </template>
 
     <button class="lang-btn" type="button"
-      @click="$emit('setLang', 'eng')"
+      @click="$emit('setLang')"
       >
       <template v-if="lang === 'ru'">Eng</template>
       <template v-else>Ru</template>

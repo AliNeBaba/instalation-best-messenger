@@ -1,25 +1,16 @@
 <template>
-  <div class="main">
 
-    <block-question v-for="item in currentQuestions" :key="item"
-      @set-answer="setAnswer($event)"
-      @hide-elements="hideElements"
-      :hide="changeQuestions"
-      :content="item"
-      :lang="lang"
-      />
-    <block-answer
-      :content="currentAnswer"
-      @set-sign-lang="setSignLang()"
-      @close-answer="closeAnswer"
-      />
-    <sign-lang v-if="showSignLang" />
-
-  </div>
+  <main-content
+    @hide-elements="hideElements"
+    :articles="currentQuestions"
+    :sign="showSignLang"
+    :lang="lang"
+    />
 
   <state-manager
     @switch-page="switchPage($event)"
-    @set-lang="setLang($event)"
+    @set-sign="setSign"
+    @set-lang="setLang"
     :state="state"
     :total="articles.ru.length"
     :flag-hide="flags.hideToShowAnswer"
@@ -30,18 +21,14 @@
 </template>
 
 <script>
-import { getData } from '@/service.js'
-import Answer from '@/components/Answer.vue'
-import Question from '@/components/Question.vue'
-import Sign from '@/components/SignLang.vue'
+import { getData, idleReload } from '@/service.js'
+import MainContent from '@/components/MainContent.vue'
 import StateManager from '@/components/StateManager.vue'
 
 export default {
   name: 'App',
   components: {
-    'block-answer': Answer,
-    'block-question': Question,
-    'sign-lang': Sign,
+    'main-content': MainContent,
     'state-manager': StateManager
   },
   data () {
@@ -58,10 +45,7 @@ export default {
         hideToShowAnswer: false,
         blockInput: false
       },
-      currentAnswer: [],
-      currentQuestions: [],
       lang: 'ru',
-      changeQuestions: false,
       showSignLang: false,
       idleTimer: null
     }
@@ -73,66 +57,45 @@ export default {
       for (const key in data.forms.messenger.articles) {
         this.articles[key] = Object.values(data.forms.messenger.articles[key])
       }
-      this.setQuestions('')
     })()
   },
   mounted: function () {
-    document.addEventListener('mousedown', this.loadIdleTimer)
+    idleReload()
   },
   computed: {
+    startQuestions () {
+      return this.state.page * this.state.items
+    },
+    endQuestions () {
+      return this.startQuestions + this.state.items
+    },
+    currentQuestions () {
+      return this.articles[this.lang].slice(this.startQuestions, this.endQuestions)
+    }
   },
   methods: {
     switchPage (action) {
-      this.changeQuestions = true
       this.buttonsDisable()
       new Promise(function (resolve, reject) {
-        setTimeout(() => resolve(action), 1000)
+        setTimeout(() => resolve(action), 100)
       }).then(function (action) {
-        this.changeQuestions = false
-        this.setQuestions(action)
-      }.bind(this))
-    },
-    setQuestions (action) {
-      if (action) {
         action === 'add'
           ? this.state.page++
           : this.state.page--
-      }
-      const start = this.state.page * this.state.items
-      const end = start + this.state.items
-      this.currentQuestions = this.articles[this.lang].slice(start, end)
-    },
-    setAnswer (target) {
-      const index = this.articles[this.lang].findIndex(arr => arr[0] === target)
-      this.currentQuestions = []
-      this.currentAnswer = this.articles[this.lang][index]
-    },
-    closeAnswer () {
-      new Promise(function (resolve, reject) {
-        this.currentAnswer = []
-        setTimeout(() => resolve(), 1000)
-      }.bind(this)).then(function () {
-        this.setQuestions('')
-        this.flags.hideToShowAnswer = false
       }.bind(this))
     },
     hideElements () {
-      this.flags.hideToShowAnswer = true
+      this.flags.hideToShowAnswer = !this.flags.hideToShowAnswer
     },
-    setLang (target) {
-      target === 'sign' ? this.setSignLang() : this.changeLang()
-    },
-    setSignLang () {
+    setSign () {
       this.state.items = this.state.items === 4 ? 2 : 4
-      this.setQuestions('')
       this.showSignLang = !this.showSignLang
       this.state.page = this.showSignLang
         ? this.state.page * 2
         : Math.ceil((this.state.page - 1) / 2)
     },
-    changeLang () {
+    setLang () {
       this.lang === 'ru' ? this.lang = 'en' : this.lang = 'ru'
-      this.setQuestions('')
     },
     buttonsDisable () {
       document.querySelectorAll('button').forEach(btn => btn.setAttribute('disabled', 'disabled'))
@@ -142,17 +105,6 @@ export default {
           document.querySelectorAll('button').forEach(btn => btn.removeAttribute('disabled', 'disabled'))
           this.flags.blockInput = false
         })
-    },
-    loadIdleTimer () {
-      clearTimeout(this.idleTimer)
-      this.idleTimer = setTimeout(this.resetPage, 15000)
-    },
-    resetPage () {
-      this.state.page = 0
-      this.showSignLang = false
-      this.state.items = 4
-      this.lang = 'ru'
-      this.closeAnswer()
     }
   }
 }
@@ -214,12 +166,5 @@ button > * {
 p {
   font-family: var(--font-atlas);
   font-size: var(--atlas-large);
-}
-
-.main {
-  height: 93.75%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
 }
 </style>
