@@ -12,7 +12,7 @@
 
       <div class="paging">
         <div v-for="n in numberOfPages" :key="n" class="page"
-          :class="{ 'bg-blue': this.state.page + 1 === n }"
+          :class="{ 'big': this.state.page + 1 === n }"
           >
         </div>
       </div>
@@ -24,10 +24,12 @@
         <img src="~@/assets/img/ArrowNext.svg" />
       </button>
 
-      <button class="btn" type="button"
-        @click="$emit('setSign')"
+      <button class="sign-btn" type="button"
+        @click="setSign"
         >
-        <img src="~@/assets/img/SignLang.svg" />
+        <img src="~@/assets/img/SignLang.svg"
+        :style="buttonOpacity"
+        />
       </button>
 
     </template>
@@ -48,6 +50,13 @@ import gsap from 'gsap'
 export default {
   name: 'StateManager',
   props: ['state', 'flagHide', 'flagDisable', 'total', 'lang'],
+  data () {
+    return {
+      buttonOpacity: {
+        opacity: '.5'
+      }
+    }
+  },
   computed: {
     numberOfPages () {
       return Math.ceil(this.total / this.state.items)
@@ -68,6 +77,12 @@ export default {
     }
   },
   methods: {
+    setSign () {
+      this.$emit('setSign')
+      this.buttonOpacity.opacity === '.5'
+        ? this.buttonOpacity.opacity = '1'
+        : this.buttonOpacity.opacity = '.5'
+    },
     Hide (newValue) {
       if (newValue) {
         gsap.to(['.btn', '.paging'], { duration: 1, opacity: 0 })
@@ -86,29 +101,33 @@ export default {
   justify-content: flex-end;
 }
 .btn {
-  opacity: 1;
   width: 13.5%;
-  background-color: var(--bg-blue);
+  background-color: var(--bg-white);
+}
+.sign-btn {
+  background-color: var(--bg-black);
+  width: 13.5%;
 }
 .lang-btn {
   background-color: var(--bg-white);
   width: 13.5%;
 }
 .paging {
-  background-color: var(--bg-white);
+  background-color: transparent;
   width: 46%;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
 }
 .page {
-  height: 25px;
-  width: 25px;
-  border: 6px solid var(--bg-blue);
+  height: 10px;
+  width: 10px;
+  background-color: var(--bg-white);
   border-radius: 50%;
-  margin: auto 6px;
+  margin: 20px 15px auto 15px;
 }
-.bg-blue {
-  background-color: var(--bg-blue);
+.big {
+  height: 20px;
+  width: 20px;
 }
 </style>

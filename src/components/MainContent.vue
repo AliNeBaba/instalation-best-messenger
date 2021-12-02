@@ -1,24 +1,28 @@
 <template>
   <div class="main">
 
-    <div class="container"
-         v-for="item in filteredArticles" :key="item">
+    <section v-for="item in filteredArticles" :key="item">
 
       <block-question
         v-if="!target"
         @set-answer="setAnswer($event)"
+        @set-sign="setSign($event)"
+        :isSign="sign"
+        :content="item"
+        :lang="lang"
+        >
+      </block-question>
+
+      <block-answer
+        v-else
+        @set-sign-lang="setSignLang()"
+        @close-answer="closeAnswer"
         :content="item"
         :lang="lang"
         />
-      <block-answer
-        v-else
-        :content="item"
-        @set-sign-lang="setSignLang()"
-        @close-answer="closeAnswer"
-        />
       <sign-lang v-if="sign" />
 
-    </div>
+    </section>
 
   </div>
 </template>
@@ -63,8 +67,11 @@ export default {
 .main {
   height: 93.75%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
-.container {
+section {
   display: flex;
   flex-direction: column;
   align-items: flex-start;

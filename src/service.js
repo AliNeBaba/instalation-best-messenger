@@ -5,7 +5,7 @@ export const getData = () => fetch(URL).then(response => response.json(), 4000)
 export const idleReload = () => {
   const timeout = () => setTimeout(function () {
     window.location.reload()
-  }, 25000)
+  }, 55000)
 
   let reset
 

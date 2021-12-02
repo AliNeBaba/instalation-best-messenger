@@ -1,4 +1,4 @@
   <svg width="45" height="46" viewBox="0 0 45 46" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M43 23L4.42897 23" stroke="white" stroke-width="4" stroke-miterlimit="10" stroke-linecap="square"/>
-    <path d="M23.0298 43L2.99984 23L23.0248 3" stroke="white" stroke-width="4" stroke-miterlimit="10" stroke-linecap="square"/>
+    <path d="M43 23L4.42897 23" stroke="#124adf" stroke-width="4" stroke-miterlimit="10" stroke-linecap="square"/>
+    <path d="M23.0298 43L2.99984 23L23.0248 3" stroke="#124adf" stroke-width="4" stroke-miterlimit="10" stroke-linecap="square"/>
   </svg>

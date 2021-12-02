@@ -150,7 +150,7 @@ export default {
 }
 body {
   margin: 0;
-  background-color: var(--bg-black);
+  background-color: var(--bg-blue);
 }
 #app {
   height: 100vh;
