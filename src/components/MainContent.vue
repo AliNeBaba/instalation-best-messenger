@@ -3,15 +3,15 @@
 
     <section v-for="item in filteredArticles" :key="item">
 
-      <block-question
-        v-if="!target"
-        @set-answer="setAnswer($event)"
-        @set-sign="setSign($event)"
-        :isSign="sign"
-        :content="item"
-        :lang="lang"
-        >
-      </block-question>
+      <div v-if="targetIndex === undefined">
+        <block-question class="q-position"
+          @set-answer="setAnswer($event)"
+          @set-sign="setSign($event)"
+          :isSign="sign"
+          :content="item"
+          :lang="lang"
+          />
+      </div>
 
       <block-answer
         v-else
@@ -20,9 +20,10 @@
         :content="item"
         :lang="lang"
         />
-      <sign-lang v-if="sign" />
 
     </section>
+
+    <sign-lang v-if="sign" />
 
   </div>
 </template>
@@ -42,21 +43,21 @@ export default {
   props: ['articles', 'sign', 'lang'],
   data () {
     return {
-      target: undefined
+      targetIndex: undefined
     }
   },
   computed: {
     filteredArticles () {
-      return this.target ? this.articles.filter(arr => arr[0] === this.target) : this.articles
+      return !(this.targetIndex === undefined) ? this.articles.slice(this.targetIndex, this.targetIndex + 1) : this.articles
     }
   },
   methods: {
     setAnswer (target) {
-      this.target = target
+      this.targetIndex = this.articles.findIndex(arr => arr[0] === target)
       this.$emit('hideElements')
     },
     closeAnswer () {
-      this.target = undefined
+      this.targetIndex = undefined
       this.$emit('hideElements')
     }
   }
@@ -67,13 +68,39 @@ export default {
 .main {
   height: 93.75%;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
 }
 section {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
+}
+section > div {
+  margin-left: 2.5rem;
+}
+section:nth-child(1) .q-position {
+  margin-top: 6rem;
+}
+section:nth-child(2) .q-position {
+  top: 1.3rem;
+  left: -1.4rem;
+}
+section:nth-child(2) > div {
+  width: 41rem;
+  border: 3px solid var(--bg-black);
+  background-color: var(--bg-white);
+  margin-left: 3.8rem;
+  margin-top: 2.5rem;
+  margin-bottom: 2.7rem;
+}
+section:nth-child(4) .q-position {
+  top: -1.3rem;
+  left: -1.4rem;
+}
+section:nth-child(4) > div {
+  width: 41rem;
+  border: 3px solid var(--bg-black);
+  background-color: var(--bg-white);
+  margin-left: 3.8rem;
+  margin-top: 3.8rem;
 }
 </style>

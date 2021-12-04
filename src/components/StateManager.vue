@@ -101,20 +101,20 @@ export default {
   justify-content: flex-end;
 }
 .btn {
-  width: 13.5%;
+  width: 13.4%;
   background-color: var(--bg-white);
 }
 .sign-btn {
   background-color: var(--bg-black);
-  width: 13.5%;
+  width: 13.4%;
 }
 .lang-btn {
   background-color: var(--bg-white);
-  width: 13.5%;
+  width: 13.4%;
 }
 .paging {
   background-color: transparent;
-  width: 46%;
+  width: 47%;
   display: flex;
   justify-content: center;
   align-items: flex-end;

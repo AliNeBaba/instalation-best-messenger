@@ -33,15 +33,13 @@ export default {
 .block-answer {
   background-color: var(--bg-white);
   position: relative;
-  margin-left: 2.5rem;
-  margin-right: 0;
   padding: 2.5rem 3.75rem 2.5rem 5rem;
 }
 .blank {
   background-color: var(--bg-blue);
   position: absolute;
-  top: -.1rem;
-  right: -.1rem;
+  top: 0;
+  right: 0;
   width: 20rem;
   height: 4rem;
 }
@@ -60,9 +58,9 @@ export default {
 .sign {
   background-color: var(--bg-black);
   position: absolute;
-  right: 0;
-  bottom: 10rem;
-  width: 6.6rem;
+  left: 41.1rem;
+  top: 46.67rem;
+  width: 6.4rem;
   height: 5rem;
   display: flex;
   justify-content: center;
@@ -71,7 +69,7 @@ export default {
 .close {
   background-color: var(--bg-black);
   position: absolute;
-  left: -4rem;
+  left: -2.4rem;
   bottom: -5rem;
   width: 20rem;
   height: 5rem;

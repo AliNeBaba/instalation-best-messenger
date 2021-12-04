@@ -13,8 +13,7 @@ export default {
 <style>
 .sign-block {
   position: fixed;
-  width: 42%;
-  bottom: 7rem;
   right: 0;
+  top: 51.8rem;
 }
 </style>
