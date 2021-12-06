@@ -6,7 +6,6 @@
       <div v-if="targetIndex === undefined">
         <block-question class="q-position"
           @set-answer="setAnswer($event)"
-          @set-sign="setSign($event)"
           :isSign="sign"
           :content="item"
           :lang="lang"
@@ -15,7 +14,6 @@
 
       <block-answer
         v-else
-        @set-sign-lang="setSignLang()"
         @close-answer="closeAnswer"
         :content="item"
         :lang="lang"

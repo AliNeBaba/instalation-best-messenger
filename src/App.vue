@@ -1,6 +1,7 @@
 <template>
 
   <main-content
+    @set-sign="setSign"
     @hide-elements="hideElements"
     :articles="currentQuestions"
     :sign="showSignLang"
@@ -35,7 +36,7 @@ export default {
     return {
       articles: {
         ru: [],
-        eng: []
+        en: []
       },
       state: {
         page: 0,
@@ -52,11 +53,7 @@ export default {
   },
   created: function () {
     (async () => {
-      const data = await getData()
-      console.log(data)
-      for (const key in data.forms.messenger.articles) {
-        this.articles[key] = Object.values(data.forms.messenger.articles[key])
-      }
+      this.articles = await getData()
     })()
   },
   mounted: function () {

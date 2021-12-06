@@ -1,13 +1,13 @@
 <template>
     <div class="block-answer">
       <div class="blank"></div>
-      <p class="answer-question">{{ content[0] }}</p>
+      <p class="answer-question">{{ content.title }}</p>
       <div class="line"></div>
-      <p class="general-answer">{{ content[3] }}</p>
-      <p class="general-answer">{{ content[1] }}</p>
-      <p class="answer-info">{{ content[2] }}</p>
+      <p class="general-answer">{{ content.shortAnswer }}</p>
+      <p class="general-answer">{{ content.response }}</p>
+      <p class="answer-info">{{ content.agenda }}</p>
       <button class="sign" type="button"
-        @click="$emit('setSignLang')"
+        @click="$emit('setSign')"
         >
         <img src="~@/assets/img/SignLang.svg" />
       </button>
@@ -25,7 +25,7 @@
 export default {
   name: 'Answer',
   props: ['content', 'lang'],
-  emits: ['closeAnswer']
+  emits: ['closeAnswer', 'setSignLang']
 }
 </script>
 

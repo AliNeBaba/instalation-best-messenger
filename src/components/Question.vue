@@ -1,6 +1,6 @@
 <template>
   <div class="question">
-    <p>{{ content[0] }}</p>
+    <p>{{ content.title }}</p>
     <button
       @click="closeQuestion(true)"
       class="btn-answer"
