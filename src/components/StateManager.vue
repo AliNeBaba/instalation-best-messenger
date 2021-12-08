@@ -76,19 +76,21 @@ export default {
       }
     }
   },
+  watch: {
+    flagHide (newValue) {
+      if (newValue) {
+        gsap.to(['.btn', '.paging'], { duration: 1, opacity: 0 })
+      } else {
+        gsap.to(['.btn', '.paging'], { duration: 1, opacity: 1 })
+      }
+    }
+  },
   methods: {
     setSign () {
       this.$emit('setSign')
       this.buttonOpacity.opacity === '.5'
         ? this.buttonOpacity.opacity = '1'
         : this.buttonOpacity.opacity = '.5'
-    },
-    Hide (newValue) {
-      if (newValue) {
-        gsap.to(['.btn', '.paging'], { duration: 1, opacity: 0 })
-      } else {
-        gsap.to(['.btn', '.paging'], { duration: 1, opacity: 1 })
-      }
     }
   }
 }

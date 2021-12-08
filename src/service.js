@@ -1,7 +1,7 @@
 const URL = 'http://localhost:24567/getData'
-const WAIT_TO_REFRESH = 1500000
-let FIRST_REQUESTS = 1
-const FIRST_REQUESTS_DELAY = 1000
+const WAIT_TO_REFRESH = 15000
+let FIRST_REQUESTS = 3
+const FIRST_REQUESTS_DELAY = 3000
 
 export const getData = () => {
   return new Promise(resolve => {

@@ -1,10 +1,9 @@
 <template>
   <div class="main">
 
-    <section v-for="item in filteredArticles" :key="item">
-
       <div v-if="targetIndex === undefined">
-        <block-question class="q-position"
+        <block-question
+          v-for="item in filteredArticles" :key="item"
           @set-answer="setAnswer($event)"
           :isSign="sign"
           :content="item"
@@ -15,11 +14,9 @@
       <block-answer
         v-else
         @close-answer="closeAnswer"
-        :content="item"
+        :content="filteredArticles"
         :lang="lang"
         />
-
-    </section>
 
     <sign-lang v-if="sign" />
 
@@ -46,7 +43,7 @@ export default {
   },
   computed: {
     filteredArticles () {
-      return !(this.targetIndex === undefined) ? this.articles.slice(this.targetIndex, this.targetIndex + 1) : this.articles
+      return !(this.targetIndex === undefined) ? this.articles[this.targetIndex] : this.articles
     }
   },
   methods: {
@@ -66,39 +63,5 @@ export default {
 .main {
   height: 93.75%;
   width: 100%;
-}
-section {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-section > div {
-  margin-left: 2.5rem;
-}
-section:nth-child(1) .q-position {
-  margin-top: 6rem;
-}
-section:nth-child(2) .q-position {
-  top: 1.3rem;
-  left: -1.4rem;
-}
-section:nth-child(2) > div {
-  width: 41rem;
-  border: 3px solid var(--bg-black);
-  background-color: var(--bg-white);
-  margin-left: 3.8rem;
-  margin-top: 2.5rem;
-  margin-bottom: 2.7rem;
-}
-section:nth-child(4) .q-position {
-  top: -1.3rem;
-  left: -1.4rem;
-}
-section:nth-child(4) > div {
-  width: 41rem;
-  border: 3px solid var(--bg-black);
-  background-color: var(--bg-white);
-  margin-left: 3.8rem;
-  margin-top: 3.8rem;
 }
 </style>
