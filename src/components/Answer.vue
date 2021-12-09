@@ -1,24 +1,24 @@
 <template>
-    <div class="block-answer">
-      <div class="blank"></div>
-      <p class="answer-question">{{ content.title }}</p>
-      <div class="line"></div>
-      <p class="general-answer">{{ content.shortAnswer }}</p>
-      <p class="general-answer">{{ content.response }}</p>
-      <p class="answer-info">{{ content.agenda }}</p>
-      <button class="sign" type="button"
-        @click="$emit('setSign')"
-        >
-        <img src="~@/assets/img/SignLang.svg" />
-      </button>
-      <button class="close" type="button"
-        @click="$emit('closeAnswer')"
-        >
-        <img src="~@/assets/img/ArrowBackBig.svg" />
-        <template v-if="lang === 'ru'">Назад</template>
-        <template v-else>Back</template>
-      </button>
-    </div>
+  <div class="block-answer">
+    <div class="blank"></div>
+    <p class="answer-question">{{ content.title }}</p>
+    <div class="line"></div>
+    <p class="general-answer">{{ content.shortAnswer }}</p>
+    <p class="general-answer">{{ content.response }}</p>
+    <p class="answer-info">{{ content.agenda }}</p>
+    <button class="sign" type="button"
+      @click="$emit('setSign')"
+      >
+      <img src="~@/assets/img/SignLang.svg" />
+    </button>
+    <button class="close" type="button"
+      @click="$emit('closeAnswer')"
+      >
+      <img src="~@/assets/img/ArrowBackBig.svg" />
+      <template v-if="lang === 'ru'">Назад</template>
+      <template v-else>Back</template>
+    </button>
+  </div>
 </template>
 
 <script>

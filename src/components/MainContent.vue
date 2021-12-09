@@ -1,22 +1,34 @@
 <template>
   <div class="main">
 
-      <div v-if="targetIndex === undefined">
-        <block-question
-          v-for="item in filteredArticles" :key="item"
-          @set-answer="setAnswer($event)"
-          :isSign="sign"
-          :content="item"
+      <transition mode="out-in"
+        @enter="enter"
+        @leave="leave"
+        :css="false"
+        >
+        <div v-if="targetIndex === undefined">
+          <transition-group
+            @enter="enter"
+            @leave="leave"
+            :css="false"
+            >
+            <block-question
+              v-for="item in filteredArticles" :key="item"
+              @set-answer="setAnswer($event)"
+              :isSign="sign"
+              :content="item"
+              :lang="lang"
+              />
+          </transition-group>
+        </div>
+
+        <block-answer
+          v-else
+          @close-answer="closeAnswer"
+          :content="filteredArticles"
           :lang="lang"
           />
-      </div>
-
-      <block-answer
-        v-else
-        @close-answer="closeAnswer"
-        :content="filteredArticles"
-        :lang="lang"
-        />
+      </transition>
 
     <sign-lang v-if="sign" />
 
@@ -24,6 +36,8 @@
 </template>
 
 <script>
+import gsap from 'gsap'
+
 import Answer from '@/components/Answer.vue'
 import Question from '@/components/Question.vue'
 import Sign from '@/components/SignLang.vue'
@@ -47,6 +61,22 @@ export default {
     }
   },
   methods: {
+    enter (el, done) {
+      console.log(el, 'enter')
+      gsap.timeline().from(el, {
+        duration: 2,
+        opacity: 0,
+        onComplete: done
+      })
+    },
+    leave (el, done) {
+      console.log(el, 'leave')
+      gsap.timeline().to(el, {
+        duration: 2,
+        opacity: 0,
+        onComplete: done
+      })
+    },
     setAnswer (target) {
       this.targetIndex = this.articles.findIndex(arr => arr[0] === target)
       this.$emit('hideElements')

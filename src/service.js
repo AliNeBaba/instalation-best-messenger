@@ -1,7 +1,7 @@
 const URL = 'http://localhost:24567/getData'
-const WAIT_TO_REFRESH = 15000
+const WAIT_TO_REFRESH = 1500000
 let FIRST_REQUESTS = 3
-const FIRST_REQUESTS_DELAY = 3000
+const FIRST_REQUESTS_DELAY = 0
 
 export const getData = () => {
   return new Promise(resolve => {
@@ -34,11 +34,15 @@ function normalizer (obj) {
     for (let i = 0; i < lengthArticles; ++i) {
       const replacer = {}
       for (let j = 0; j < normalized[key][i].length; ++j) {
-        replacer[fields[j]] = normalized[key][i][j]
+        if (/http/.test(normalized[key][i][j])) {
+          replacer[fields[j]] = normalized[key][i][j]
+        } else {
+          replacer[fields[j]] = normalized[key][i][j] //  .split(' ').map(s => `<span>${s}</span>`).join(' ')
+        }
       }
       normalized[key].push(replacer)
     }
-    normalized[key].splice(0, 10)
+    normalized[key].splice(0, normalized[key].length / 2)
   }
   console.log(normalized)
   return normalized

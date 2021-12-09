@@ -22,18 +22,10 @@
 </template>
 
 <script>
-import gsap from 'gsap'
-
 export default {
   name: 'Question',
   props: ['content', 'lang', 'isSign'],
   emits: ['setAnswer', 'hideElements'],
-  mounted () {
-    gsap.to(['.question', '.wrapper'], { opacity: 1, duration: 0.25 })
-  },
-  beforeUnmount () {
-    gsap.to(['.question', '.wrapper'], { opacity: 0, duration: 0.25 })
-  },
   methods: {
     closeQuestion (action) {
       if (action) {
@@ -82,11 +74,7 @@ section:nth-child(4) > .wrapper {
   margin-left: 3.8rem;
   margin-top: 3.8rem;
 }
-.wrapper {
-  opacity: 0;
-}
 .question {
-  opacity: 0;
   position: relative;
   top: .3rem;
   min-height: 13rem;
