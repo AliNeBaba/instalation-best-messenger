@@ -1,36 +1,75 @@
 <template>
-  <div class="block-answer">
-    <div class="blank"></div>
-    <p class="answer-question">{{ content.title }}</p>
-    <div class="line"></div>
-    <p class="general-answer">{{ content.shortAnswer }}</p>
-    <p class="general-answer">{{ content.response }}</p>
-    <p class="answer-info">{{ content.agenda }}</p>
-    <button class="sign" type="button"
-      @click="$emit('setSign')"
-      >
-      <img src="~@/assets/img/SignLang.svg" />
-    </button>
-    <button class="close" type="button"
-      @click="$emit('closeAnswer')"
-      >
-      <img src="~@/assets/img/ArrowBackBig.svg" />
-      <template v-if="lang === 'ru'">Назад</template>
-      <template v-else>Back</template>
-    </button>
-  </div>
+  <transition
+    name="answer"
+    @enter="enter"
+    @after-enter="$emit('changeInput', false)"
+    @before-leave="$emit('changeInput', true)"
+    @leave="leave"
+    @after-leave="$emit('answerHidden', false)"
+    :css="false"
+    >
+    <div class="block-answer" v-if="!(content === undefined)">
+      <div class="blank"></div>
+      <p class="answer-question" v-html="content.title"></p>
+      <div class="line"></div>
+      <p class="general-answer" v-html="content.shortAnswer"></p>
+      <p class="general-answer" v-html="content.response"></p>
+      <p class="answer-info" v-html="content.agenda"></p>
+      <button class="sign" type="button"
+        @click="$emit('setSign')"
+        :disabled="flagBlockInput"
+        >
+        <img src="~@/assets/img/SignLang.svg" />
+      </button>
+      <button class="close" type="button"
+        @click="$emit('closeAnswer')"
+        :disabled="flagBlockInput"
+        >
+        <img src="~@/assets/img/ArrowBackBig.svg" />
+        <template v-if="lang === 'ru'">Назад</template>
+        <template v-else>Back</template>
+      </button>
+    </div>
+  </transition>
 </template>
 
 <script>
+import gsap from 'gsap'
+
 export default {
   name: 'Answer',
-  props: ['content', 'lang'],
-  emits: ['closeAnswer', 'setSignLang']
+  props: ['content', 'lang', 'isSign', 'flagBlockInput'],
+  emits: ['changeInput', 'answerHidden', 'closeAnswer', 'setSignLang'],
+  methods: {
+    enter (el, done) {
+      gsap.timeline().from(el, {
+        duration: 0.2,
+        opacity: 0
+      }).to('span', {
+        visibility: 'visible',
+        x: 0,
+        stagger: {
+          amount: 0.4,
+          ease: 'none'
+        },
+        onComplete: done
+      })
+    },
+    leave (el, done) {
+      gsap.to(el, {
+        duration: 0.2,
+        opacity: 0,
+        onComplete: done
+      })
+    }
+  }
 }
 </script>
 
+//  Styles for spans are into MainContent.vue
 <style>
 .block-answer {
+  margin-left: 2.5rem;
   background-color: var(--bg-white);
   position: relative;
   padding: 2.5rem 3.75rem 2.5rem 5rem;

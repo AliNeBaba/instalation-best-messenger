@@ -1,34 +1,25 @@
 <template>
   <div class="main">
 
-      <transition mode="out-in"
-        @enter="enter"
-        @leave="leave"
-        :css="false"
-        >
-        <div v-if="targetIndex === undefined">
-          <transition-group
-            @enter="enter"
-            @leave="leave"
-            :css="false"
-            >
-            <block-question
-              v-for="item in filteredArticles" :key="item"
-              @set-answer="setAnswer($event)"
-              :isSign="sign"
-              :content="item"
-              :lang="lang"
-              />
-          </transition-group>
-        </div>
+    <block-question
+      @set-answer="setAnswer($event)"
+      @questions-hidden="readyToNextQuestions = true"
+      @change-input="$emit('changeInput', $event)"
+      :flag-block-input="flagBlockInput"
+      :isSign="sign"
+      :content="showArticles"
+      :lang="lang"
+      />
 
-        <block-answer
-          v-else
-          @close-answer="closeAnswer"
-          :content="filteredArticles"
-          :lang="lang"
-          />
-      </transition>
+    <block-answer
+      @answer-hidden="$emit('changeShowAnswer', $event)"
+      @change-input="$emit('changeInput', $event)"
+      @close-answer="closeAnswer"
+      :flag-block-input="flagBlockInput"
+      :isSign="sign"
+      :content="filteredArticles"
+      :lang="lang"
+      />
 
     <sign-lang v-if="sign" />
 
@@ -36,8 +27,6 @@
 </template>
 
 <script>
-import gsap from 'gsap'
-
 import Answer from '@/components/Answer.vue'
 import Question from '@/components/Question.vue'
 import Sign from '@/components/SignLang.vue'
@@ -49,41 +38,57 @@ export default {
     'block-answer': Answer,
     'sign-lang': Sign
   },
-  props: ['articles', 'sign', 'lang'],
+  props: ['articles', 'sign', 'lang', 'flagBlockInput', 'changePage'],
+  emits: ['changeShowAnswer', 'changeInput', 'questionsHidden'],
   data () {
     return {
-      targetIndex: undefined
+      answerIndex: undefined,
+      readyToNextQuestions: true,
+      answerHidden: true,
+      readyToShowAnswer: false
     }
   },
   computed: {
     filteredArticles () {
-      return !(this.targetIndex === undefined) ? this.articles[this.targetIndex] : this.articles
+      return this.readyToShowAnswer ? this.articles[this.answerIndex] : undefined
+    },
+    showArticles () {
+      return this.flagToShowAnswers ? this.articles : {}
+    },
+    flagToShowAnswers () {
+      return (this.answerIndex === undefined) && this.readyToNextQuestions
+    }
+  },
+  watch: {
+    answerHidden (newValue) {
+      if (newValue) {
+        this.$emit('changeShowAnswer')
+      }
+    },
+    changePage () {
+      this.readyToNextQuestions = false
+    },
+    lang () {
+      this.readyToNextQuestions = false
     }
   },
   methods: {
-    enter (el, done) {
-      console.log(el, 'enter')
-      gsap.timeline().from(el, {
-        duration: 2,
-        opacity: 0,
-        onComplete: done
-      })
-    },
-    leave (el, done) {
-      console.log(el, 'leave')
-      gsap.timeline().to(el, {
-        duration: 2,
-        opacity: 0,
-        onComplete: done
-      })
-    },
     setAnswer (target) {
-      this.targetIndex = this.articles.findIndex(arr => arr[0] === target)
-      this.$emit('hideElements')
+      this.$emit('changeShowAnswer', true)
+      this.answerIndex = this.articles.findIndex(arr => arr.title === target)
+      new Promise(function (resolve, reject) {
+        setTimeout(() => resolve(), 500)
+      }).then(function () {
+        this.readyToShowAnswer = true
+      }.bind(this))
     },
     closeAnswer () {
-      this.targetIndex = undefined
-      this.$emit('hideElements')
+      this.readyToShowAnswer = false
+      new Promise(function (resolve, reject) {
+        setTimeout(() => resolve(), 500)
+      }).then(function () {
+        this.answerIndex = undefined
+      }.bind(this))
     }
   }
 }
@@ -93,5 +98,10 @@ export default {
 .main {
   height: 93.75%;
   width: 100%;
+}
+span {
+  display: inline-block;
+  transform: translateX(200px);
+  visibility: hidden;
 }
 </style>

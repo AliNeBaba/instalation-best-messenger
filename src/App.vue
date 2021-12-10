@@ -1,11 +1,13 @@
 <template>
 
   <main-content
-    @set-sign="setSign"
-    @hide-elements="hideElements"
+    @change-input="flags.blockInput = $event"
+    @change-show-answer="flags.showAnswer = $event"
     :articles="currentQuestions"
-    :sign="showSignLang"
+    :sign="flags.showSignLang"
+    :flag-block-input="flags.blockInput"
     :lang="lang"
+    :change-page="state.page"
     />
 
   <state-manager
@@ -14,8 +16,8 @@
     @set-lang="setLang"
     :state="state"
     :total="articles.ru.length"
-    :flag-hide="flags.hideToShowAnswer"
-    :flag-disable="flags.blockInput"
+    :flag-hide="flags.showAnswer"
+    :flag-block-input="flags.blockInput"
     :lang="lang"
     />
 
@@ -43,12 +45,11 @@ export default {
         items: 4
       },
       flags: {
-        hideToShowAnswer: false,
+        showAnswer: false,
+        showSignLang: false,
         blockInput: false
       },
-      lang: 'ru',
-      showSignLang: false,
-      idleTimer: null
+      lang: 'ru'
     }
   },
   created: function () {
@@ -72,36 +73,19 @@ export default {
   },
   methods: {
     switchPage (action) {
-      this.buttonsDisable()
-      new Promise(function (resolve, reject) {
-        setTimeout(() => resolve(action), 100)
-      }).then(function (action) {
-        action === 'add'
-          ? this.state.page++
-          : this.state.page--
-      }.bind(this))
-    },
-    hideElements () {
-      this.flags.hideToShowAnswer = !this.flags.hideToShowAnswer
+      action === 'add'
+        ? this.state.page++
+        : this.state.page--
     },
     setSign () {
       this.state.items = this.state.items === 4 ? 2 : 4
-      this.showSignLang = !this.showSignLang
-      this.state.page = this.showSignLang
+      this.flags.showSignLang = !this.flags.showSignLang
+      this.state.page = this.flags.showSignLang
         ? this.state.page * 2
         : Math.ceil((this.state.page - 1) / 2)
     },
     setLang () {
       this.lang === 'ru' ? this.lang = 'en' : this.lang = 'ru'
-    },
-    buttonsDisable () {
-      document.querySelectorAll('button').forEach(btn => btn.setAttribute('disabled', 'disabled'))
-      this.flags.blockInput = true
-      new Promise((resolve) => setTimeout(resolve, 2000))
-        .then(() => {
-          document.querySelectorAll('button').forEach(btn => btn.removeAttribute('disabled', 'disabled'))
-          this.flags.blockInput = false
-        })
     }
   }
 }

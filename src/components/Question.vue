@@ -1,44 +1,71 @@
 <template>
-  <section>
-    <div class="wrapper">
-      <div class="question">
-        <p>{{ content.title }}</p>
-        <button
-          @click="closeQuestion(true)"
-          class="btn-answer"
-          >
-          <template v-if="lang === 'ru'">Ответ</template>
-          <template v-else>Answer</template>
-          <img src="~@/assets/img/ArrowNextBig.svg" />
-        </button>
-        <button class="sign-question" type="button"
-          v-if="isSign"
-          >
-          <img src="~@/assets/img/SignLang.svg" />
-        </button>
+  <transition-group
+    name="group"
+    @enter="enter"
+    @after-enter="$emit('changeInput', false)"
+    @before-leave="$emit('changeInput', true)"
+    @leave="leave"
+    @after-leave="$emit('questionsHidden')"
+    :css="false"
+    >
+    <section v-for="item in content" :key="item">
+      <div class="wrapper">
+        <div class="question">
+          <p v-html="item.title"></p>
+          <button class="btn-answer" type="button"
+            @click="$emit('setAnswer', item.title)"
+            :disabled="flagBlockInput"
+            >
+            <template v-if="lang === 'ru'">Ответ</template>
+            <template v-else>Answer</template>
+            <img src="~@/assets/img/ArrowNextBig.svg" />
+          </button>
+          <button class="sign-question" type="button"
+            v-if="isSign"
+            :disabled="flagBlockInput"
+            >
+            <img src="~@/assets/img/SignLang.svg" />
+          </button>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </transition-group>
 </template>
 
 <script>
+import gsap from 'gsap'
+
 export default {
   name: 'Question',
-  props: ['content', 'lang', 'isSign'],
-  emits: ['setAnswer', 'hideElements'],
+  props: ['content', 'lang', 'isSign', 'flagBlockInput'],
+  emits: ['setAnswer', 'hideElements', 'questionsHidden', 'changeInput'],
   methods: {
-    closeQuestion (action) {
-      if (action) {
-        this.$emit('hideElements')
-      }
-      if (action) {
-        this.$emit('setAnswer', this.content[0])
-      }
+    enter (el, done) {
+      gsap.timeline().from(el, {
+        duration: 0.2,
+        opacity: 0
+      }).to('span', {
+        visibility: 'visible',
+        x: 0,
+        stagger: {
+          amount: 0.4,
+          ease: 'none'
+        },
+        onComplete: done
+      })
+    },
+    leave (el, done) {
+      gsap.to(el, {
+        duration: 0.2,
+        opacity: 0,
+        onComplete: done
+      })
     }
   }
 }
 </script>
 
+//  Styles for spans are into MainContent.vue
 <style>
 section {
   display: flex;

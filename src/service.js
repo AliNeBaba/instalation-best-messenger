@@ -37,7 +37,7 @@ function normalizer (obj) {
         if (/http/.test(normalized[key][i][j])) {
           replacer[fields[j]] = normalized[key][i][j]
         } else {
-          replacer[fields[j]] = normalized[key][i][j] //  .split(' ').map(s => `<span>${s}</span>`).join(' ')
+          replacer[fields[j]] = normalized[key][i][j].split(' ').map(s => `<span>${s}</span>`).join(' ')
         }
       }
       normalized[key].push(replacer)
