@@ -21,6 +21,7 @@
             <img src="~@/assets/img/ArrowNextBig.svg" />
           </button>
           <button class="sign-question" type="button"
+            @click="$emit('setSignQuestion', item.RZY_short)"
             v-if="isSign"
             :disabled="flagBlockInput"
             >
@@ -38,7 +39,7 @@ import gsap from 'gsap'
 export default {
   name: 'Question',
   props: ['content', 'lang', 'isSign', 'flagBlockInput'],
-  emits: ['setAnswer', 'hideElements', 'questionsHidden', 'changeInput'],
+  emits: ['setAnswer', 'hideElements', 'questionsHidden', 'changeInput', 'setSignQuestion'],
   methods: {
     enter (el, done) {
       gsap.timeline().from(el, {

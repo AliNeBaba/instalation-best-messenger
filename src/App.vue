@@ -3,21 +3,20 @@
   <main-content
     @change-input="flags.blockInput = $event"
     @change-show-answer="flags.showAnswer = $event"
+    @set-sign="setSign"
+    @add-page="state.page++"
     :articles="currentQuestions"
-    :sign="flags.showSignLang"
-    :flag-block-input="flags.blockInput"
+    :flags="flags"
     :lang="lang"
-    :change-page="state.page"
     />
 
   <state-manager
     @switch-page="switchPage($event)"
     @set-sign="setSign"
     @set-lang="setLang"
+    :flags="flags"
     :state="state"
     :total="articles.ru.length"
-    :flag-hide="flags.showAnswer"
-    :flag-block-input="flags.blockInput"
     :lang="lang"
     />
 
@@ -47,7 +46,7 @@ export default {
       flags: {
         showAnswer: false,
         showSignLang: false,
-        blockInput: false
+        isAnimation: false
       },
       lang: 'ru'
     }

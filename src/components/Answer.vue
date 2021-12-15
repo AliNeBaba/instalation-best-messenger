@@ -1,4 +1,5 @@
 <template>
+
   <transition
     name="answer"
     @enter="enter"
@@ -8,19 +9,24 @@
     @after-leave="$emit('answerHidden', false)"
     :css="false"
     >
+
     <div class="block-answer" v-if="!(content === undefined)">
+
       <div class="blank"></div>
       <p class="answer-question" v-html="content.title"></p>
       <div class="line"></div>
-      <p class="general-answer" v-html="content.shortAnswer"></p>
-      <p class="general-answer" v-html="content.response"></p>
-      <p class="answer-info" v-html="content.agenda"></p>
+      <p v-html="content.shortAnswer"></p>
+      <p class="margin" v-html="correctFirstResponse"></p>
+      <p class="margin correct" v-html="correctSecondResponse"></p>
+      <p class="answer-info correct" v-html="content.agenda"></p>
+
       <button class="sign" type="button"
-        @click="$emit('setSign')"
+        @click="$emit('setLocalSign')"
         :disabled="flagBlockInput"
         >
         <img src="~@/assets/img/SignLang.svg" />
       </button>
+
       <button class="close" type="button"
         @click="$emit('closeAnswer')"
         :disabled="flagBlockInput"
@@ -29,8 +35,11 @@
         <template v-if="lang === 'ru'">Назад</template>
         <template v-else>Back</template>
       </button>
+
     </div>
+
   </transition>
+
 </template>
 
 <script>
@@ -39,7 +48,18 @@ import gsap from 'gsap'
 export default {
   name: 'Answer',
   props: ['content', 'lang', 'isSign', 'flagBlockInput'],
-  emits: ['changeInput', 'answerHidden', 'closeAnswer', 'setSignLang'],
+  emits: ['changeInput', 'answerHidden', 'closeAnswer', 'setLocalSign'],
+  computed: {
+    splitRZY () {
+      return this.content.RZY_text.split('|')
+    },
+    correctFirstResponse () {
+      return this.isSign ? this.splitRZY[0] : this.content.response
+    },
+    correctSecondResponse () {
+      return this.isSign ? this.splitRZY[1] : undefined
+    }
+  },
   methods: {
     enter (el, done) {
       gsap.timeline().from(el, {
@@ -77,8 +97,8 @@ export default {
 .blank {
   background-color: var(--bg-blue);
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 1px;
+  right: 1px;
   width: 20rem;
   height: 4rem;
 }
@@ -116,5 +136,12 @@ export default {
   justify-content: space-evenly;
   color: var(--bg-white);
   align-items: center;
+}
+.margin {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.correct {
+  margin-right: 10rem;
 }
 </style>

@@ -1,4 +1,5 @@
 <template>
+
   <div class="footer">
 
     <transition
@@ -7,7 +8,7 @@
       :css="false"
       >
       <button class="btn" type="button"
-        v-if="!flagHide"
+        v-if="!flags.showAnswer"
         @click="$emit('switchPage', 'sub')"
         :disabled="isDisabledBack"
         >
@@ -21,7 +22,7 @@
       :css="false"
       >
       <div class="paging"
-        v-if="!flagHide"
+        v-if="!flags.showAnswer"
         >
         <div v-for="n in numberOfPages" :key="n" class="page"
           :class="{ 'big': this.state.page + 1 === n }"
@@ -36,7 +37,7 @@
       :css="false"
       >
       <button class="btn" type="button"
-        v-if="!flagHide"
+        v-if="!flags.showAnswer"
         @click="$emit('switchPage', 'add')"
         :disabled="isDisabledNext"
         >
@@ -50,19 +51,19 @@
       :css="false"
       >
       <button class="sign-btn" type="button"
-        v-if="!flagHide"
-        @click="setSign"
-        :disabled="flagBlockInput"
+        v-if="!flags.showAnswer"
+        @click="$emit('setSign')"
+        :disabled="flags.blockInput"
         >
         <img src="~@/assets/img/SignLang.svg"
-        :style="buttonOpacity"
+             :style="{opacity: signOpacity}"
         />
       </button>
     </transition>
 
     <button class="lang-btn" type="button"
       @click="$emit('setLang')"
-      :disabled="flagBlockInput"
+      :disabled="flags.blockInput"
       >
       <template v-if="lang === 'ru'">Eng</template>
       <template v-else>Ru</template>
@@ -76,31 +77,27 @@ import gsap from 'gsap'
 
 export default {
   name: 'StateManager',
-  props: ['state', 'flagHide', 'flagBlockInput', 'total', 'lang'],
-  data () {
-    return {
-      buttonOpacity: {
-        opacity: '.5'
-      }
-    }
-  },
+  props: ['state', 'flags', 'total', 'lang'],
   computed: {
     numberOfPages () {
       return Math.ceil(this.total / this.state.items)
     },
     isDisabledBack () {
-      if (this.state.page === 0 && !this.flagBlockInput) {
+      if (this.state.page === 0 && !this.flags.isAnimation) {
         return true
       } else {
         return false
       }
     },
     isDisabledNext () {
-      if (this.state.page === this.numberOfPages - 1 && !this.flagBlockInput) {
+      if (this.state.page === this.numberOfPages - 1 && !this.flags.isAnimation) {
         return true
       } else {
         return false
       }
+    },
+    signOpacity () {
+      return this.flags.showSignLang ? 1 : 0.4
     }
   },
   methods: {
@@ -117,12 +114,6 @@ export default {
         opacity: 0,
         onComplete: done
       })
-    },
-    setSign () {
-      this.$emit('setSign')
-      this.buttonOpacity.opacity === '.5'
-        ? this.buttonOpacity.opacity = '1'
-        : this.buttonOpacity.opacity = '.5'
     }
   }
 }
